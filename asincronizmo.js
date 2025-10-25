@@ -27,6 +27,7 @@ async function fetchNewData() {
 }
 
 fetchNewData();
+
 */
 
 function sendHTTPRequest(method, url, data) {
