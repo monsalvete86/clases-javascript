@@ -4,21 +4,27 @@ let vidasJugador = 3;
 let vidasEnemigo = 3;
 
 function iniciarJuego() {
-    let botonMascotaJugador = document.getElementById('boton-mascota');
-    botonMascotaJugador.addEventListener('click', seleccionarMascotaJugador);
+	let seccionSeleccionarAtaque = document.getElementById('seleccionar-ataque');
+	seccionSeleccionarAtaque.style.display = 'none';
 
-		let botonFuego = document.getElementById('boton-fuego');
-    botonFuego.addEventListener('click', ataqueFuego);
+	let seccionReiniciar = document.getElementById('reiniciar');
+	seccionReiniciar.style.display = 'none';
 
-		let botonAgua = document.getElementById('boton-agua');
-		botonAgua.addEventListener('click', ataqueAgua);
+	let botonMascotaJugador = document.getElementById('boton-mascota');
+	botonMascotaJugador.addEventListener('click', seleccionarMascotaJugador);
 
-		let botonTierra = document.getElementById('boton-tierra');
-		botonTierra.addEventListener('click', ataqueTierra);
+	let botonFuego = document.getElementById('boton-fuego');
+	botonFuego.addEventListener('click', ataqueFuego);
 
-		let botonReiniciar = document.getElementById('boton-reiniciar');
+	let botonAgua = document.getElementById('boton-agua');
+	botonAgua.addEventListener('click', ataqueAgua);
 
-		botonReiniciar.addEventListener('click', reiniciarJuego);
+	let botonTierra = document.getElementById('boton-tierra');
+	botonTierra.addEventListener('click', ataqueTierra);
+
+	let botonReiniciar = document.getElementById('boton-reiniciar');
+
+	botonReiniciar.addEventListener('click', reiniciarJuego);
 }
 
 function reiniciarJuego() {
@@ -38,6 +44,12 @@ function reiniciarJuego() {
 
 	let botonMascotaJugador = document.getElementById('boton-mascota');
 	botonMascotaJugador.disabled = false;
+
+	let seccionReiniciar = document.getElementById('reiniciar');
+	seccionReiniciar.style.display = 'none';
+
+	let seccionSeleccionarAtaque = document.getElementById('seleccionar-ataque');
+	seccionSeleccionarAtaque.style.display = 'none';
 
 	cambiarEstadoBotones(true);
 }
@@ -130,6 +142,7 @@ function seleccionarMascotaJugador() {
     spanMascotaJugador.innerHTML = "Ratigueya";
   } else {
     alert("Selecciona una mascota");
+		return;
   }
 
 	let botonMascotaJugador = document.getElementById('boton-mascota');
@@ -140,7 +153,7 @@ function seleccionarMascotaJugador() {
 
 function seleccionarMascotaEnemigo() {
   let ataqueAleatorio = aleatorio(1, 3); // 1-Hipodoge, 2-Capipepo, 3-Ratigueya trae un numero aleatorio entre 1 y 3
-	let spanMascotaEnemigo = document.getElementById("mascota-enemigo"); //
+let spanMascotaEnemigo = document.getElementById("mascota-enemigo"); //
 
   if (ataqueAleatorio == 1) {
     spanMascotaEnemigo.innerHTML = 'Hipodoge'
@@ -150,10 +163,18 @@ function seleccionarMascotaEnemigo() {
     spanMascotaEnemigo.innerHTML = 'Ratigueya'
   }
 
+	let seccionSeleccionarAtaque = document.getElementById('seleccionar-ataque');
+	seccionSeleccionarAtaque.style.display = 'block';
+
+	let seccionReiniciar = document.getElementById('reiniciar');
+	seccionReiniciar.style.display = 'block';
+
 	cambiarEstadoBotones();	
 }
 
 function cambiarEstadoBotones(reinicio = false) {
+	
+
 	const botonFuego = document.getElementById('boton-fuego');
 	const botonAgua = document.getElementById('boton-agua');
 	const botonTierra = document.getElementById('boton-tierra');
