@@ -32,6 +32,10 @@ let botonFuego;
 let botonAgua;
 let botonTierra;
 let botones = [];
+let victoriasJugador = 0;
+let victoriasEnemigo = 0;
+let indexAtaqueJugador;
+let indexAtaqueEnemigo;
 
 class Mokepon {
   constructor(nombre, foto, vida) {
@@ -115,8 +119,8 @@ function reiniciarJuego() {
 	ataqueEnemigo = [];
   ataquesDelJugador.innerHTML = '';
   ataquesDelEnemigo.innerHTML = '';
-	vidasJugador = 3;
-	vidasEnemigo = 3;
+	vidasJugador = 0;
+	vidasEnemigo = 0;
 	sectionMensajes.innerHTML = 'Mucha suerte';
 	vidasEnemigoSpan.innerHTML = vidasEnemigo;
 	vidasJugadorSpan.innerHTML = vidasJugador;
@@ -124,6 +128,8 @@ function reiniciarJuego() {
 	seccionReiniciar.style.display = 'none';
 	seccionSeleccionarAtaque.style.display = 'none';
 	seccionSleccionarMascota.style.display = 'flex';
+  victoriasJugador = 0;
+  victoriasEnemigo = 0;
 
 	cambiarEstadoBotones(true);
 }
@@ -144,39 +150,56 @@ function ataqueAleatorioeEnemigo() {
 		ataqueEnemigo.push('TIERRA');
 	}
 
-	crearMensaje();
+	// crearMensaje();
+  iniciarPelea();
+}
+
+function iniciarPelea() {
+  if (ataqueJugador.length === 5) {
+    combate();
+  }
+}
+
+function indexAmbosOponentes(jugador, enemigo) {
+  indexAtaqueJugador = ataqueJugador[jugador];
+  indexAtaqueEnemigo = ataqueEnemigo[enemigo];
 }
 
 function combate() {
-	if (ataqueJugador == ataqueEnemigo) return "EMPATE";
+  for (let index = 0; index < ataqueJugador.length; index++) {
+    if (ataqueJugador[index] === ataqueEnemigo[index]) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("EMPATE");
+    } else if (
+      (ataqueJugador[index] == 'FUEGO' && ataqueEnemigo[index] == 'TIERRA') ||
+      (ataqueJugador[index] == 'AGUA' && ataqueEnemigo[index] == 'FUEGO') ||
+      (ataqueJugador[index] == 'TIERRA' && ataqueEnemigo[index] == 'AGUA')
+    ) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("GANASTE");
+      victoriasJugador++;
+      vidasJugadorSpan.innerHTML = victoriasJugador;      
+    } else {
+      indexAmbosOponentes(index, index);
+      crearMensaje("PERDISTE");
+      victoriasEnemigo++;
+      vidasEnemigoSpan.innerHTML = victoriasEnemigo;      
+    }
+  }
 
-	if (
-		(ataqueJugador == 'FUEGO' && ataqueEnemigo == 'TIERRA') ||
-		(ataqueJugador == 'AGUA' && ataqueEnemigo == 'FUEGO') ||
-		(ataqueJugador == 'TIERRA' && ataqueEnemigo == 'AGUA')
-	) {
-		vidasEnemigo--;
-		vidasEnemigoSpan.innerHTML = vidasEnemigo;
-
-		return "GANASTE";
-	}
-
-	vidasJugador--;
-	vidasJugadorSpan.innerHTML = vidasJugador;
-
-	return "PERDISTE";
+  revisarVidas();
 }
 
-function crearMensaje() {
-	const resultado = combate();
+function crearMensaje(resultado) {
+	// const resultado = combate();
 
 	let nuevoAtaqueDelEnemigo = document.createElement('p');
 	let nuevoAtaqueDelJugador = document.createElement('p');
 
 	sectionMensajes.innerHTML = resultado;
 
-	nuevoAtaqueDelJugador.innerHTML = ataqueJugador; // variable global ataqueJugador
-	nuevoAtaqueDelEnemigo.innerHTML = ataqueEnemigo; // variable global ataqueEnemigo
+	nuevoAtaqueDelJugador.innerHTML = indexAtaqueJugador; // variable global ataqueJugador
+	nuevoAtaqueDelEnemigo.innerHTML = indexAtaqueEnemigo; // variable global ataqueEnemigo
 
 	ataquesDelJugador.appendChild(nuevoAtaqueDelJugador);
 	ataquesDelEnemigo.appendChild(nuevoAtaqueDelEnemigo);
@@ -184,18 +207,23 @@ function crearMensaje() {
 	crearMensajeFinal();
 }
 
-function crearMensajeFinal() {
-	if (vidasEnemigo == 0) {
-		sectionMensajes.innerHTML = '¡FELICIDADES! ¡GANASTE EL JUEGO!';
-		cambiarEstadoBotones();
-	} else if (vidasJugador == 0) {
-		sectionMensajes.innerHTML = 'Lo siento, perdiste el juego :(';
-		cambiarEstadoBotones();
+function revisarVidas() {
+  if (victoriasJugador === victoriasEnemigo) {
+    crearMensajeFinal('¡Esto es un empate!');
+  } else if (victoriasJugador > victoriasEnemigo) {
+		crearMensajeFinal('¡FELICIDADES! ¡GANASTE EL JUEGO!');
+	} else {
+		crearMensajeFinal('Lo siento, perdiste el juego :(');
 	}
+}
 
-	if (vidasEnemigo == 0 || vidasJugador == 0) {
+function crearMensajeFinal(mensaje) {
+	sectionMensajes.innerHTML = mensaje;
+	cambiarEstadoBotones();	
+
+	// if (vidasEnemigo == 0 || vidasJugador == 0) {
 		seccionReiniciar.style.display = 'block';
-	}
+	// }
 }
 
 function seleccionarMascotaJugador() {
@@ -203,15 +231,35 @@ function seleccionarMascotaJugador() {
   const inputCapipepo = document.getElementById("Capipepo");
   const inputRatigueya = document.getElementById("Ratigueya");
 
+
+  const divImgJugador = document.getElementById("img-mascota-jugador");
+
   if (inputHipodoge.checked) {
     spanMascotaJugador.innerHTML = inputHipodoge.id;
     mascotaJugador = inputHipodoge.id;
+
+    const imgMokepon = `
+      <label class="label-mascota-elegida">
+        <img src="${hipodoge.foto}" alt="${hipodoge.nombre}" />
+      </label>`;
+    divImgJugador.innerHTML = imgMokepon;
+  
   } else if (inputCapipepo.checked) {
     spanMascotaJugador.innerHTML = inputCapipepo.id;
     mascotaJugador = inputCapipepo.id;
+    const imgMokepon = `
+      <label class="label-mascota-elegida"  >
+        <img src="${capipepo.foto}" alt="${capipepo.nombre}" />
+      </label>`;
+    divImgJugador.innerHTML = imgMokepon;
   } else if (inputRatigueya.checked) {
     spanMascotaJugador.innerHTML = inputRatigueya.id;
     mascotaJugador = inputRatigueya.id;
+    const imgMokepon = `
+      <label class="label-mascota-elegida" >
+        <img src="${ratigueya.foto}" alt="${ratigueya.nombre}" />
+      </label>`;
+    divImgJugador.innerHTML = imgMokepon;
   } else {
     alert("Selecciona una mascota");
 		return;
@@ -278,9 +326,16 @@ function secuenciaAtaque() {
 
 function seleccionarMascotaEnemigo() {
   let mascotaAleatoria = aleatorio(0, mokepones.length - 1);
+  const divImgEnemigo = document.getElementById("img-mascota-enemigo");
   
   spanMascotaEnemigo.innerHTML = mokepones[mascotaAleatoria].nombre;
   ataquesMokeponEnemigo = mokepones[mascotaAleatoria].ataques;
+
+  const imgMokepon = `
+      <label class="label-mascota-elegida" >
+        <img src="${mokepones[mascotaAleatoria].foto}" alt="${mokepones[mascotaAleatoria].nombre}" />
+      </label>`;
+    divImgEnemigo.innerHTML = imgMokepon;
 
 
 	seccionSleccionarMascota.style.display = 'none';	
